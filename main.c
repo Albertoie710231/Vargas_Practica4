@@ -66,14 +66,13 @@ int main(void)
 #else
     mcg_clk_hz = pll_init(CLK_FREQ_HZ, LOW_POWER, EXTERNAL_CLOCK, PLL0_PRDIV, PLL0_VDIV, PLL_ENABLE);
 #endif
-	PDB_init();
+	PDB_init_adc();
 
 	ADC_init(&adc_config);
 
-	PDB_reset_counter();
-
 	while(1)
 	{
+		ADC_input_chn_select(ADC_0, SCn_A, AD_12);
 		data = ADC_data_result(ADC_0, SCn_A);
 	}
 

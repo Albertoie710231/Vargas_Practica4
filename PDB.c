@@ -7,7 +7,7 @@
 
 #include "MK64F12.h"
 
-void PDB_init(void)
+void PDB_init_adc(void)
 {
 	SIM->SCGC6 |= SIM_SCGC6_PDB(1);
 	/**1)Deshabilitar operación back-to-back pre-tiggrer
@@ -23,10 +23,24 @@ void PDB_init(void)
 	PDB0->CH[0].C1 |= PDB_C1_EN(1);
 	PDB0->SC |= PDB_SC_CONT(1);
 	PDB0->SC |= PDB_SC_TRGSEL(0x0F);
-	PDB0->SC |= PDB_SC_LDOK(1);
 	PDB0->MOD = ((6000000/8000)-1);//Frecuencia
 	PDB0->IDLY = ((6000000/8000)-1);
-	PDB0->SC |= PDB_SC_PDBEN(1);
+	PDB0->SC |= PDB_SC_PDBEN_MASK;
+	PDB0->SC |= PDB_SC_LDOK(1);
+
+	PDB0->SC |= PDB_SC_SWTRIG(1);
+}
+
+void PDB_init_dac(void)
+{
+	PDB0->SC &= ~PDB_SC_PDBEN_MASK;
+	PDB0->SC |= PDB_SC_SWTRIG(1);
+	PDB0->SC |= PDB_SC_DMAEN(1);
+	PDB0->MOD = ((6000000/8000)-1);//Frecuencia
+	PDB0->IDLY = ((6000000/8000)-1);
+	PDB0->SC |= PDB_SC_PDBEN_MASK;
+	PDB0->SC |= PDB_SC_LDOK(1);
+	PDB0->SC |= PDB_SC_SWTRIG(1);
 }
 
 void PDB_reset_counter(void)
