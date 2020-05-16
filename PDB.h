@@ -8,6 +8,8 @@
 #ifndef PDB_H_
 #define PDB_H_
 
+void PDB_init(void);
 
+void PDB_reset_counter(void);
 
 #endif /* PDB_H_ */

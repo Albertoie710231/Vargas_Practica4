@@ -134,4 +134,10 @@ void ADC_init(const adc_config_t* config_struct)
 	ADC_calibration(config_struct->adc,config_struct->avrg);
 
 	ADC_sample_time(config_struct->adc, config_struct->smpl_time);
+
+	ADC0->CFG2 |= ADC_CFG2_MUXSEL(0);
+
+	ADC0->CFG2 |= ADC_CFG2_ADHSC(0);
+
+	ADC0->SC2 |= ADC_SC2_ADTRG(1);
 }

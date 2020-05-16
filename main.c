@@ -12,6 +12,9 @@
 #include "MK64F12.h"
 #include "stdio.h"
 #include "MCG.h"
+#include "PDB.h"
+#include "ADC.h"
+
 #define CLK_FREQ_HZ 50000000  /* CLKIN0 frequency */
 #define SLOW_IRC_FREQ 32768	/*This is the approximate value for the slow irc*/
 #define FAST_IRC_FREQ 4000000 /*This is the approximate value for the fast irc*/
@@ -24,6 +27,19 @@
 #define CLK0_TYPE 0     /* Crystal or canned oscillator clock input */
 #define PLL0_PRDIV 25    /* PLL predivider value */
 #define PLL0_VDIV 30    /* PLL multiplier value*/
+
+static adc_config_t adc_config =
+{
+		ADC_0,
+		SCn_A,
+		SAMP_8,
+		DES_DIFF,
+		AD_12,//PTB_2
+		DIV_2,
+		LONG_SAMPLE,
+		MODE_0,
+		BUS_CLK
+};
 /** Macros for debugging*/
 //#define DEBUG
 
@@ -35,6 +51,8 @@ int main(void)
 {
 	PDB_init();
 
+	ADC_init(&adc_config);
+
 	 int mcg_clk_hz;
 	    unsigned char modeMCG = 0;
 
@@ -42,37 +60,11 @@ int main(void)
 	#ifndef PLL_DIRECT_INIT
 	    mcg_clk_hz = fei_fbi(SLOW_IRC_FREQ,SLOW_IRC);// 64 Hz ---> 32768
 	    mcg_clk_hz = fbi_fbe(CLK_FREQ_HZ,LOW_POWER,EXTERNAL_CLOCK); // 97.656KHz ---> 50000000
-//	    mcg_clk_hz = fbe_pbe(CLK_FREQ_HZ,PLL0_PRDIV,PLL0_VDIV);	// 97.656KHz ---> 50000000 and PLL is configured to generate 60000000
-//	    mcg_clk_hz =  pbe_pee(CLK_FREQ_HZ);// 117.18 KHz ---> 60000000
+	    mcg_clk_hz = fbe_pbe(CLK_FREQ_HZ,PLL0_PRDIV,PLL0_VDIV);	// 97.656KHz ---> 50000000 and PLL is configured to generate 60000000
+	    mcg_clk_hz =  pbe_pee(CLK_FREQ_HZ);// 117.18 KHz ---> 60000000
 	#else
 	       mcg_clk_hz = pll_init(CLK_FREQ_HZ, LOW_POWER, EXTERNAL_CLOCK, PLL0_PRDIV, PLL0_VDIV, PLL_ENABLE);
 	#endif
-
-
-	    modeMCG = what_mcg_mode();
-	#ifdef DEBUG
-	    printf("\nMCG mode =  %d\n",modeMCG);
-	  	printf("Clock Rate =  %d MHz\n",mcg_clk_hz);
-	#endif
-
-
-   	/** Configuration for the output compare mode of the FlexTimer 0*/
-    SIM->SCGC5 |= SIM_SCGC5_PORTC_MASK;
-	SIM->SCGC6 |= SIM_SCGC6_FTM0_MASK;
-	PORTC->PCR[1]   = PORT_PCR_MUX(0x4);
-
-	FTM0->MODE |= FTM_MODE_WPDIS_MASK;
-	FTM0->MODE &= ~FTM_MODE_FTMEN_MASK;
-	FTM0->CONF |= FTM_CONF_BDMMODE(3);
-
-	FTM0->CNT = 0x0;
-	FTM0->COMBINE = 0;
-	FTM0->MOD = 0x1;
-	FTM0->CNTIN = 0;
-	FTM0->SC = 0;
-	FTM0->CONTROLS[0].CnSC = FTM_CnSC_MSA_MASK| FTM_CnSC_ELSA_MASK;
-	FTM0->CONTROLS[0].CnV= 0x1;
-	FTM0->SC |= FTM_SC_PS(7)|FTM_SC_CLKS(1);
 
 	while(1)
 	{
