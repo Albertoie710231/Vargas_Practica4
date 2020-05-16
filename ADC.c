@@ -59,6 +59,7 @@ uint16_t ADC_data_result(adc_t adc_n, adc_scn_x_t sc1_n)
 	switch(adc_n)
 	{
 	case ADC_0:
+		ADC_input_chn_select(ADC_0, SCn_A, AD_12);
 		while(0 == (ADC0->SC1[sc1_n] & ADC_SC1_COCO_MASK));
 		data_result = (ADC0->R[sc1_n]);
 		break;

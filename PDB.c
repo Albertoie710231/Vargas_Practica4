@@ -18,13 +18,14 @@ void PDB_init(void)
 	 * 6)Escribir 1 en LDOK
 	 * 7)Configurar Frecuencia de operación del PDB a 8 KHz
 	 */
-	PDB0->CH[0].C1 |= PDB_C1_BB(0);
-	PDB0->CH[0].C1 |= PDB_C1_TOS(1);
+	PDB0->CH[0].C1 &= (~PDB_C1_BB_MASK);
+	PDB0->CH[0].C1 |= PDB_C1_TOS_MASK;
 	PDB0->CH[0].C1 |= PDB_C1_EN(1);
 	PDB0->SC |= PDB_SC_CONT(1);
 	PDB0->SC |= PDB_SC_TRGSEL(0x0F);
 	PDB0->SC |= PDB_SC_LDOK(1);
-	PDB0->MOD = PDB_MOD_MOD((uint16_t)(1/8000));//Frecuencia
+	PDB0->MOD = ((6000000/8000)-1);//Frecuencia
+	PDB0->IDLY = ((6000000/8000)-1);
 	PDB0->SC |= PDB_SC_PDBEN(1);
 }
 
