@@ -7,6 +7,9 @@
 
 #include "MK64F12.h"
 
+#define SOURCE_CLK 60000000U
+#define FREQ_MUESTR 8000U
+
 void PDB_init_adc(void)
 {
 	SIM->SCGC6 |= SIM_SCGC6_PDB(1);
@@ -23,8 +26,8 @@ void PDB_init_adc(void)
 	PDB0->CH[0].C1 |= PDB_C1_EN(1);
 	PDB0->SC |= PDB_SC_CONT(1);
 	PDB0->SC |= PDB_SC_TRGSEL(0x0F);
-	PDB0->MOD = ((60000000/8000)-1);//Frecuencia
-	PDB0->IDLY = ((60000000/8000)-1);
+	PDB0->MOD = ((SOURCE_CLK/FREQ_MUESTR)-1);//Frecuencia
+	PDB0->IDLY = ((SOURCE_CLK/FREQ_MUESTR)-1);
 	PDB0->SC |= PDB_SC_PDBEN_MASK;
 	PDB0->SC |= PDB_SC_LDOK(1);
 
@@ -33,11 +36,19 @@ void PDB_init_adc(void)
 
 void PDB_init_dac(void)
 {
+/**
+	1)Deshabilitar el PDB
+	2)Deshabilitar el trigger por software (bit 16 SC)
+	3)Configurar el trigger y periodo del DAC
+	4)Habilitar el PDB y la carga en registros (ver bit LDOK)
+	5)Habilitar el trigger por software (bit 16 SC)
+*/
+
 	PDB0->SC &= ~PDB_SC_PDBEN_MASK;
 	PDB0->SC |= PDB_SC_SWTRIG(1);
-	PDB0->SC |= PDB_SC_DMAEN(1);
-	PDB0->MOD = ((6000000/8000)-1);//Frecuencia
-	PDB0->IDLY = ((6000000/8000)-1);
+	PDB0->SC |= PDB_SC_DMAEN_MASK;
+	PDB0->MOD = ((SOURCE_CLK/FREQ_MUESTR)-1);//Frecuencia
+	PDB0->IDLY = ((SOURCE_CLK/FREQ_MUESTR)-1);
 	PDB0->SC |= PDB_SC_PDBEN_MASK;
 	PDB0->SC |= PDB_SC_LDOK(1);
 	PDB0->SC |= PDB_SC_SWTRIG(1);

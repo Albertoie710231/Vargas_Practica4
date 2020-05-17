@@ -21,7 +21,7 @@
 #define ARRAY_SIZE (16u)
 
 #define DMA_CH0 (0x01u)
-#define DMA_SOURCE_PDB (0x30u)
+#define DMA_SOURCE_PDB (48u)
 
 const uint16_t sin_signal[SIZE_ARRAY]=
 {
@@ -45,13 +45,11 @@ const uint16_t sin_signal[SIZE_ARRAY]=
 
 };
 
-
+static uint32_t g_data_address = FALSE;
 
 void DMA0_IRQHandler(void)
 {
-	uint8_t i;
-	PDB0->SC &= ~PDB_SC_PDBIF(1);
-	DMA0->INT = DMA_CH0;
+	DMA0->TCD[0].SADDR = (uint32_t)(&sin_signal[0]);/*defines source data address*/
 	DMA0->CINT = 0;
 }
 
@@ -72,7 +70,7 @@ void DMA_init(void)
 
 	DMA0->ERQ = 0x01;//enables DMA0 request
 
-	DMA0->TCD[0].SADDR = (uint32_t)(&sin_signal[0]);/*defines source data address*/
+	DMA0->TCD[0].SADDR = (uint32_t)(&sin_signal);/*defines source data address*/
 	DMA0->TCD[0].SOFF = 2;/*Source address signed offset;it is expressed in number of bytes*/
 	DMA0->TCD[0].DADDR = (uint32_t)(&DAC0->DAT);/*defines destination data address*/
 	DMA0->TCD[0].DOFF = 0;/*destination address signed offset;it is expressed in number of bytes*/
@@ -83,7 +81,7 @@ void DMA_init(void)
 	DMA0->TCD[0].CITER_ELINKNO = DMA_CITER_ELINKNO_CITER(NUM_STEPS);
 	/* Once a major loop is completed, BITTER is copy to CITTER*/
 	DMA0->TCD[0].BITER_ELINKNO = DMA_BITER_ELINKNO_BITER(NUM_STEPS);
-	DMA0->TCD[0].NBYTES_MLNO = SIZE_ARRAY*2;/*byte number*/
+	DMA0->TCD[0].NBYTES_MLNO = 2;/*byte number*/
 
 	DMA0->TCD[0].ATTR = DMA_ATTR_SSIZE(1)|DMA_ATTR_DSIZE(1);/*8 bit transfer size, in order to transfer see Kinetis user manual*/
 	DMA0->TCD[0].SLAST = -(SIZE_ARRAY*2);//restores the source address to the initial value, which is expressed in the amount of bytes to restore*/

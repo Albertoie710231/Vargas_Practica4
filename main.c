@@ -16,8 +16,9 @@
 #include "ADC.h"
 #include "GPIO.h"
 #include "bits.h"
-#include "speaker.h"
 #include "NVIC.h"
+#include "DMA.h"
+#include "DAC.h"
 
 #define CLK_FREQ_HZ 50000000  /* CLKIN0 frequency */
 #define SLOW_IRC_FREQ 32768	/*This is the approximate value for the slow irc*/
@@ -45,6 +46,12 @@ static adc_config_t adc_config =
 		BUS_CLK
 };
 
+dac_config_t g_dac_config = {
+		DAC_0,
+		DACREF_2,
+		DESABLE
+};
+
 static gpio_pin_control_register_t pin_control_register = GPIO_MUX4;
 /** Macros for debugging*/
 //#define DEBUG
@@ -68,18 +75,23 @@ int main(void)
 #else
     mcg_clk_hz = pll_init(CLK_FREQ_HZ, LOW_POWER, EXTERNAL_CLOCK, PLL0_PRDIV, PLL0_VDIV, PLL_ENABLE);
 #endif
+
+    DMA_clock_gating();
+
+    DMA_init();
+
+    ADC_init(&adc_config);
+
+    DAC_init(&g_dac_config);
+
 	PDB_init_adc();
 
 	PDB_init_dac();
 
-	ADC_init(&adc_config);
-
-	speaker_init();
-
 	NVIC_set_basepri_threshold(PRIORITY_10);
 
-	NVIC_enable_interrupt_and_priority(DMA_CH0_IRQ, PRIORITY_7);
-	NVIC_enable_interrupt_and_priority(ADC0_IRQ, PRIORITY_6);
+	NVIC_enable_interrupt_and_priority(DMA_CH0_IRQ, PRIORITY_6);
+	NVIC_enable_interrupt_and_priority(ADC0_IRQ, PRIORITY_7);
 
 	NVIC_global_enable_interrupts;
 
