@@ -21,48 +21,9 @@
 #include "DAC.h"
 #include "menu.h"
 #include "UART.h"
+#include "main.h"
 
-#define SYSTEM_CLK 60000000
 
-#define CLK_FREQ_HZ 50000000  /* CLKIN0 frequency */
-#define SLOW_IRC_FREQ 32768	/*This is the approximate value for the slow irc*/
-#define FAST_IRC_FREQ 4000000 /*This is the approximate value for the fast irc*/
-#define EXTERNAL_CLOCK 0 /*It defines an external clock*/
-#define PLL_ENABLE 1 /**PLL is enabled*/
-#define PLL_DISABLE 0 /**PLL is disabled*/
-#define CRYSTAL_OSC 1  /*It defines an crystal oscillator*/
-#define LOW_POWER 0     /* Set the oscillator for low power mode */
-#define SLOW_IRC 0 		/* Set the slow IRC */
-#define CLK0_TYPE 0     /* Crystal or canned oscillator clock input */
-#define PLL0_PRDIV 25    /* PLL predivider value */
-#define PLL0_VDIV 30    /* PLL multiplier value*/
-
-static adc_config_t adc_config =
-{
-		ADC_0,
-		SCn_A,
-		SAMP_8,
-		DES_DIFF,
-		AD_12,//PTB_2
-		DIV_2,
-		LONG_SAMPLE,
-		MODE_0,
-		BUS_CLK
-};
-
-dac_config_t g_dac_config = {
-		DAC_0,
-		DACREF_2,
-		DESABLE
-};
-
-static uart_config_t g_uart_config_0 = {
-		UART_0,
-		SYSTEM_CLK,
-		BD_115200
-};
-
-static gpio_pin_control_register_t g_pin_control_register_uart = GPIO_MUX3;
 /** Macros for debugging*/
 //#define DEBUG
 
@@ -75,6 +36,8 @@ int main(void)
 
 	 int mcg_clk_hz;
 
+	 static gpio_pin_control_register_t pin_control_register_uart = GPIO_MUX3;
+
 #ifndef PLL_DIRECT_INIT
     mcg_clk_hz = fei_fbi(SLOW_IRC_FREQ,SLOW_IRC);// 64 Hz ---> 32768
     mcg_clk_hz = fbi_fbe(CLK_FREQ_HZ,LOW_POWER,EXTERNAL_CLOCK); // 97.656KHz ---> 50000000
@@ -84,6 +47,8 @@ int main(void)
     mcg_clk_hz = pll_init(CLK_FREQ_HZ, LOW_POWER, EXTERNAL_CLOCK, PLL0_PRDIV, PLL0_VDIV, PLL_ENABLE);
 #endif
 
+    RGB_init();
+
     DMA_clock_gating();
 
     DMA_init();
@@ -91,6 +56,12 @@ int main(void)
     ADC_init(&adc_config);
 
     DAC_init(&g_dac_config);
+
+	GPIO_clock_gating(GPIO_B);
+	/**Configures the pin control register of pin16 in PortB as UART RX*/
+	GPIO_pin_control_register(GPIO_B, 16, &pin_control_register_uart);
+	/**Configures the pin control register of pin17 in PortB as UART TX*/
+	GPIO_pin_control_register(GPIO_B, 17, &pin_control_register_uart);
 
     PDB_clk_gating();
 
@@ -103,12 +74,6 @@ int main(void)
 	UART_callback_init(UART_0, menu_select);
 
 	UART_init(&g_uart_config_0);
-
-	GPIO_clock_gating(GPIO_B);
-	/**Configures the pin control register of pin16 in PortB as UART RX*/
-	GPIO_pin_control_register(GPIO_B, 16, &g_pin_control_register_uart);
-	/**Configures the pin control register of pin17 in PortB as UART TX*/
-	GPIO_pin_control_register(GPIO_B, 17, &g_pin_control_register_uart);
 
 	menu_principal();
 

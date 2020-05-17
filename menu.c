@@ -9,6 +9,9 @@
 #include "UART.h"
 #include "PDB.h"
 #include "ADC.h"
+#include "RGB.h"
+
+#define SYSTEM_CLK 60000000
 
 #define BCKSPACE '\b'
 #define ENTER '\r'
@@ -57,6 +60,7 @@ void menu_select(void)
 		break;
 	case '2':
 		menu_clear();
+		RGB_all_turn_off();
 		UART_put_string(UART_0, "\033[10;10H");
 		UART_put_string(UART_0, &menu4);
 		UART_put_string(UART_0, "\033[11;10H");

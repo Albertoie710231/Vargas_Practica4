@@ -7,6 +7,7 @@
 
 #include "ADC.h"
 #include "PDB.h"
+#include "RGB.h"
 #include "MK64F12.h"
 
 #define SIZE_ARRAY 40000
@@ -24,6 +25,7 @@ void ADC0_IRQHandler(void)
 	}
 	else
 	{
+		RGB_green_on();
 		pos = 0;
 		PDB_desable();
 	}

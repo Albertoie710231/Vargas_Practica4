@@ -52,6 +52,8 @@ void PDB_init_dac(void)
 	PDB0->SC &= ~PDB_SC_PDBEN_MASK;
 	PDB0->SC |= PDB_SC_SWTRIG(1);
 
+/** Deshabilita registros de PDB que controlan ADC **/
+
 	PDB0->CH[0].C1 &= (~PDB_C1_BB_MASK);
 	PDB0->CH[0].C1 &= ~PDB_C1_TOS_MASK;
 	PDB0->CH[0].C1 &= ~PDB_C1_EN(1);

@@ -7,6 +7,8 @@
 
 #include "UART.h"
 #include "MK64F12.h"
+#include "GPIO.h"
+#include "bits.h"
 
 static uart_mail_box_t g_mail_box_uart_0 = {0,0};
 static uart_mail_box_t g_mail_box_uart_1 = {0,0};
