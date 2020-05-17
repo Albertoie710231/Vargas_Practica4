@@ -3,8 +3,8 @@
 	\brief
 		This is the source file for the MCG device driver for Kinetis K64.
 		It contains all the implementation for the different modes.
-	\author Dr. J. Luis Pizano Escalante, luispizano@iteso.mx
-	\date	25/04/2015
+	\author	Alberto Vargas Garrido
+	\date	17/05/2019
 	\todo
 	    the device driver doesn't work with frequencies greater than 65 MHz.
  */
@@ -19,6 +19,10 @@
 #include "NVIC.h"
 #include "DMA.h"
 #include "DAC.h"
+#include "menu.h"
+#include "UART.h"
+
+#define SYSTEM_CLK 60000000
 
 #define CLK_FREQ_HZ 50000000  /* CLKIN0 frequency */
 #define SLOW_IRC_FREQ 32768	/*This is the approximate value for the slow irc*/
@@ -52,7 +56,13 @@ dac_config_t g_dac_config = {
 		DESABLE
 };
 
-static gpio_pin_control_register_t pin_control_register = GPIO_MUX4;
+static uart_config_t g_uart_config_0 = {
+		UART_0,
+		SYSTEM_CLK,
+		BD_115200
+};
+
+static gpio_pin_control_register_t g_pin_control_register_uart = GPIO_MUX3;
 /** Macros for debugging*/
 //#define DEBUG
 
@@ -84,22 +94,30 @@ int main(void)
 
     DAC_init(&g_dac_config);
 
-	PDB_init_adc();
-
-	PDB_init_dac();
+    PDB_clk_gating();
 
 	NVIC_set_basepri_threshold(PRIORITY_10);
 
-	NVIC_enable_interrupt_and_priority(DMA_CH0_IRQ, PRIORITY_6);
+	NVIC_enable_interrupt_and_priority(UART0_IRQ, PRIORITY_9);
+	NVIC_enable_interrupt_and_priority(DMA_CH0_IRQ, PRIORITY_8);
 	NVIC_enable_interrupt_and_priority(ADC0_IRQ, PRIORITY_7);
+
+	UART_callback_init(UART_0, menu_select);
+
+	UART_init(&g_uart_config_0);
+
+	GPIO_clock_gating(GPIO_B);
+	/**Configures the pin control register of pin16 in PortB as UART RX*/
+	GPIO_pin_control_register(GPIO_B, 16, &g_pin_control_register_uart);
+	/**Configures the pin control register of pin17 in PortB as UART TX*/
+	GPIO_pin_control_register(GPIO_B, 17, &g_pin_control_register_uart);
+
+	menu_principal();
+
+	UART_interrupt_enable(UART_0);
 
 	NVIC_global_enable_interrupts;
 
-	while(1)
-	{
-		//ADC_input_chn_select(ADC_0, SCn_A, AD_12);
-		//data = ADC_data_result(ADC_0, SCn_A);
-	}
-
+	while(1);
 
 }

@@ -6,13 +6,18 @@
  */
 
 #include "MK64F12.h"
+#include "PDB.h"
 
 #define SOURCE_CLK 60000000U
 #define FREQ_MUESTR 8000U
 
-void PDB_init_adc(void)
+void PDB_clk_gating(void)
 {
 	SIM->SCGC6 |= SIM_SCGC6_PDB(1);
+}
+
+void PDB_init_adc(void)
+{
 	/**1)Deshabilitar operación back-to-back pre-tiggrer
 	 * 2)Activar la salidad del pre-trigger
 	 * 3)Activar el pre-trigger
@@ -21,6 +26,11 @@ void PDB_init_adc(void)
 	 * 6)Escribir 1 en LDOK
 	 * 7)Configurar Frecuencia de operación del PDB a 8 KHz
 	 */
+
+	PDB0->SC &= ~PDB_SC_PDBEN_MASK;
+	PDB0->SC |= PDB_SC_SWTRIG(1);
+	PDB0->SC &= ~PDB_SC_DMAEN_MASK;
+
 	PDB0->CH[0].C1 &= (~PDB_C1_BB_MASK);
 	PDB0->CH[0].C1 |= PDB_C1_TOS_MASK;
 	PDB0->CH[0].C1 |= PDB_C1_EN(1);
@@ -55,7 +65,12 @@ void PDB_init_dac(void)
 
 }
 
-void PDB_reset_counter(void)
+void PDB_enable(void)
 {
-	PDB0->SC |= PDB_SC_SWTRIG(1);
+	PDB0->SC |= PDB_SC_PDBEN_MASK;
+}
+
+void PDB_desable(void)
+{
+	PDB0->SC &= ~PDB_SC_PDBEN_MASK;
 }

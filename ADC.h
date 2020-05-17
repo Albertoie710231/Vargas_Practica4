@@ -105,6 +105,7 @@ typedef struct
 	adc_input_clk_t imput_clk;
 } adc_config_t;
 
+uint32_t ADC_biffer_address(void);
 
 void ADC_clk_gating(adc_t adc_n);
 
@@ -122,5 +123,6 @@ void ADC_calibration(adc_t adc_n, hwd_average_t average);
 
 void ADC_init(const adc_config_t* config_struct);
 
+void ADC_interrupt_enable(adc_t adc_n, adc_scn_x_t sc1_n);
 
 #endif /* ADC_H_ */

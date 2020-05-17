@@ -6,20 +6,31 @@
  */
 
 #include "ADC.h"
+#include "PDB.h"
 #include "MK64F12.h"
 
 #define SIZE_ARRAY 40000
 
-static uint8_t g_adc_result = 0;
+static uint8_t g_adc_result[SIZE_ARRAY] = {0};
 static uint16_t g_pos = 0;
 
 void ADC0_IRQHandler(void)
 {
 	if(SIZE_ARRAY > g_pos)
 	{
-		g_adc_result = (ADC0->R[SCn_A]);
+		g_adc_result[g_pos] = (ADC0->R[SCn_A]);
 		g_pos++;
 	}
+	else
+	{
+		g_pos = 0;
+		PDB_desable();
+	}
+}
+
+uint32_t ADC_biffer_address(void)
+{
+	return((uint32_t)(&g_adc_result[0]));
 }
 
 void ADC_clk_gating(adc_t adc_n)
@@ -136,6 +147,19 @@ void ADC_sample_time(adc_t adc_n, adc_sample_time_t sample_time)
 	}
 }
 
+void ADC_interrupt_enable(adc_t adc_n, adc_scn_x_t sc1_n)
+{
+	switch(adc_n)
+	{
+	case ADC_0:
+		ADC0->SC1[sc1_n] |= ADC_SC1_AIEN(1);
+		break;
+	case ADC_1:
+		ADC1->SC1[sc1_n] |= ADC_SC1_AIEN(1);
+		break;
+	}
+}
+
 void ADC_init(const adc_config_t* config_struct)
 {
 	ADC_clk_gating(config_struct->adc);
@@ -156,5 +180,5 @@ void ADC_init(const adc_config_t* config_struct)
 
 	ADC0->SC2 |= ADC_SC2_ADTRG(1);
 
-	ADC0->SC1[SCn_A] |= ADC_SC1_AIEN(1);
+	ADC_interrupt_enable(config_struct->adc,config_struct->scn_x);
 }

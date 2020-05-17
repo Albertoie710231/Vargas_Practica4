@@ -8,10 +8,14 @@
 #ifndef PDB_H_
 #define PDB_H_
 
+void PDB_clk_gating(void);
+
 void PDB_init_adc(void);
 
 void PDB_init_dac(void);
 
-void PDB_reset_counter(void);
+void PDB_enable(void);
+
+void PDB_desable(void);
 
 #endif /* PDB_H_ */
