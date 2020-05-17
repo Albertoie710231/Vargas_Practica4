@@ -23,8 +23,8 @@ void PDB_init_adc(void)
 	PDB0->CH[0].C1 |= PDB_C1_EN(1);
 	PDB0->SC |= PDB_SC_CONT(1);
 	PDB0->SC |= PDB_SC_TRGSEL(0x0F);
-	PDB0->MOD = ((6000000/8000)-1);//Frecuencia
-	PDB0->IDLY = ((6000000/8000)-1);
+	PDB0->MOD = ((60000000/8000)-1);//Frecuencia
+	PDB0->IDLY = ((60000000/8000)-1);
 	PDB0->SC |= PDB_SC_PDBEN_MASK;
 	PDB0->SC |= PDB_SC_LDOK(1);
 

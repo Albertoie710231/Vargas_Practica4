@@ -8,6 +8,28 @@
 #include "ADC.h"
 #include "MK64F12.h"
 
+#define SIZE_ARRAY 40000
+
+static uint8_t g_adc_result = 0;
+static uint16_t g_pos = 0;
+
+void ADC0_IRQHandler(void)
+{
+	static uint8_t temp = 0;
+
+
+	if(SIZE_ARRAY > g_pos)
+	{
+		g_adc_result = (ADC0->R[SCn_A]);
+		g_pos++;
+	}
+	else
+	{
+		temp = (ADC0->R[SCn_A]);
+		g_pos = 0;
+	}
+}
+
 void ADC_clk_gating(adc_t adc_n)
 {
 	switch(adc_n)
@@ -59,6 +81,7 @@ uint16_t ADC_data_result(adc_t adc_n, adc_scn_x_t sc1_n)
 	switch(adc_n)
 	{
 	case ADC_0:
+		ADC_input_chn_select(ADC_0, SCn_A, AD_12);
 		while(0 == (ADC0->SC1[sc1_n] & ADC_SC1_COCO_MASK));
 		data_result = (ADC0->R[sc1_n]);
 		break;
@@ -140,4 +163,6 @@ void ADC_init(const adc_config_t* config_struct)
 	ADC0->CFG2 |= ADC_CFG2_ADHSC(0);
 
 	ADC0->SC2 |= ADC_SC2_ADTRG(1);
+
+	ADC0->SC1[SCn_A] |= ADC_SC1_AIEN(1);
 }
