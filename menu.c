@@ -8,6 +8,7 @@
 #include "menu.h"
 #include "UART.h"
 #include "PDB.h"
+#include "ADC.h"
 
 #define BCKSPACE '\b'
 #define ENTER '\r'

@@ -10,24 +10,19 @@
 #include "MK64F12.h"
 #include "DAC.h"
 #include "ADC.h"
+#include "PDB.h"
 #include <stdint.h>
 #include <stdio.h>
 
 #define SIZE_ARRAY 40000
-
 #define NUM_STEPS (SIZE_ARRAY)
-#define SYSTEM_CLOCK (60000000u)
-#define DELAY (0.01F)
-
-#define DMA_CH0 (0x01u)
 #define DMA_SOURCE_PDB (48u)
-
-static uint32_t g_data_address = FALSE;
 
 void DMA0_IRQHandler(void)
 {
 	DMA0->TCD[0].SADDR = (uint32_t)(ADC_biffer_address());/*defines source data address*/
 	DMA0->CINT = 0;
+	PDB_desable();
 }
 
 

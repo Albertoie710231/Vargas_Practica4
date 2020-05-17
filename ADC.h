@@ -125,4 +125,6 @@ void ADC_init(const adc_config_t* config_struct);
 
 void ADC_interrupt_enable(adc_t adc_n, adc_scn_x_t sc1_n);
 
+void ADC_interrupt_desable(adc_t adc_n, adc_scn_x_t sc1_n);
+
 #endif /* ADC_H_ */

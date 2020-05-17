@@ -30,7 +30,9 @@ void ADC0_IRQHandler(void)
 
 uint32_t ADC_biffer_address(void)
 {
-	return((uint32_t)(&g_adc_result[0]));
+	static uint32_t address = 0;
+	address = (uint32_t)(&g_adc_result[0]);
+	return(address);
 }
 
 void ADC_clk_gating(adc_t adc_n)
@@ -160,6 +162,19 @@ void ADC_interrupt_enable(adc_t adc_n, adc_scn_x_t sc1_n)
 	}
 }
 
+void ADC_interrupt_desable(adc_t adc_n, adc_scn_x_t sc1_n)
+{
+	switch(adc_n)
+	{
+	case ADC_0:
+		ADC0->SC1[sc1_n] &= ~ADC_SC1_AIEN(1);
+		break;
+	case ADC_1:
+		ADC1->SC1[sc1_n] &= ~ADC_SC1_AIEN(1);
+		break;
+	}
+}
+
 void ADC_init(const adc_config_t* config_struct)
 {
 	ADC_clk_gating(config_struct->adc);
@@ -180,5 +195,5 @@ void ADC_init(const adc_config_t* config_struct)
 
 	ADC0->SC2 |= ADC_SC2_ADTRG(1);
 
-	ADC_interrupt_enable(config_struct->adc,config_struct->scn_x);
+	ADC_interrupt_enable(ADC_0,SCn_A);
 }

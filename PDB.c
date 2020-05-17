@@ -27,8 +27,6 @@ void PDB_init_adc(void)
 	 * 7)Configurar Frecuencia de operación del PDB a 8 KHz
 	 */
 
-	PDB0->SC &= ~PDB_SC_PDBEN_MASK;
-	PDB0->SC |= PDB_SC_SWTRIG(1);
 	PDB0->SC &= ~PDB_SC_DMAEN_MASK;
 
 	PDB0->CH[0].C1 &= (~PDB_C1_BB_MASK);
@@ -56,6 +54,11 @@ void PDB_init_dac(void)
 
 	PDB0->SC &= ~PDB_SC_PDBEN_MASK;
 	PDB0->SC |= PDB_SC_SWTRIG(1);
+
+	PDB0->CH[0].C1 &= (~PDB_C1_BB_MASK);
+	PDB0->CH[0].C1 &= ~PDB_C1_TOS_MASK;
+	PDB0->CH[0].C1 &= ~PDB_C1_EN(1);
+
 	PDB0->SC |= PDB_SC_DMAEN_MASK;
 	PDB0->MOD = ((SOURCE_CLK/FREQ_MUESTR)-1);//Frecuencia
 	PDB0->IDLY = ((SOURCE_CLK/FREQ_MUESTR)-1);
