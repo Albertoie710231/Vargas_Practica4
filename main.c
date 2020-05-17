@@ -74,8 +74,6 @@ int main(void)
 {
 
 	 int mcg_clk_hz;
-	 unsigned char modeMCG = 0;
-	 static uint16_t data = 0;
 
 #ifndef PLL_DIRECT_INIT
     mcg_clk_hz = fei_fbi(SLOW_IRC_FREQ,SLOW_IRC);// 64 Hz ---> 32768

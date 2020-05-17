@@ -8,9 +8,6 @@
 #include "MK64F12.h"
 #include "PDB.h"
 
-#define SOURCE_CLK 60000000U
-#define FREQ_MUESTR 8000U
-
 void PDB_clk_gating(void)
 {
 	SIM->SCGC6 |= SIM_SCGC6_PDB(1);

@@ -12,18 +12,19 @@
 #define SIZE_ARRAY 40000
 
 static uint8_t g_adc_result[SIZE_ARRAY] = {0};
-static uint16_t g_pos = 0;
 
 void ADC0_IRQHandler(void)
 {
-	if(SIZE_ARRAY > g_pos)
+	static uint16_t pos = 0;
+
+	if(SIZE_ARRAY > pos)
 	{
-		g_adc_result[g_pos] = (ADC0->R[SCn_A]);
-		g_pos++;
+		g_adc_result[pos] = (ADC0->R[SCn_A]);
+		pos++;
 	}
 	else
 	{
-		g_pos = 0;
+		pos = 0;
 		PDB_desable();
 	}
 }

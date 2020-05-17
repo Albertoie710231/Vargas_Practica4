@@ -8,7 +8,6 @@
 #include "DMA.h"
 #include "Bits.h"
 #include "MK64F12.h"
-#include "DAC.h"
 #include "ADC.h"
 #include "PDB.h"
 #include <stdint.h>
@@ -20,9 +19,22 @@
 
 void DMA0_IRQHandler(void)
 {
-	DMA0->TCD[0].SADDR = (uint32_t)(ADC_biffer_address());/*defines source data address*/
-	DMA0->CINT = 0;
-	PDB_desable();
+	static uint8_t num_seg = 1;
+
+
+	if(SIZE_ARRAY >(num_seg*8000))
+	{
+		DMA0->TCD[0].SADDR = (uint32_t)(ADC_biffer_address()+num_seg*FREQ_MUESTR);/*defines source data address*/
+		DMA0->CINT = 0;
+		num_seg++;
+	}
+	else
+	{
+		num_seg = 1;
+		DMA0->TCD[0].SADDR = (uint32_t)(ADC_biffer_address());
+		DMA0->CINT = 0;
+		PDB_desable();
+	}
 }
 
 

@@ -8,6 +8,9 @@
 #ifndef PDB_H_
 #define PDB_H_
 
+#define SOURCE_CLK 60000000U
+#define FREQ_MUESTR 8000U
+
 void PDB_clk_gating(void);
 
 void PDB_init_adc(void);
