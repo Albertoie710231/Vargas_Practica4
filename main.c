@@ -70,7 +70,7 @@ int main(void)
 #endif
 	PDB_init_adc();
 
-//	PDB_init_dac();
+	PDB_init_dac();
 
 	ADC_init(&adc_config);
 

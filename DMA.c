@@ -50,8 +50,9 @@ const uint16_t sin_signal[SIZE_ARRAY]=
 void DMA0_IRQHandler(void)
 {
 	uint8_t i;
-
+	PDB0->SC &= ~PDB_SC_PDBIF(1);
 	DMA0->INT = DMA_CH0;
+	DMA0->CINT = 0;
 }
 
 
@@ -88,6 +89,5 @@ void DMA_init(void)
 	DMA0->TCD[0].SLAST = -(SIZE_ARRAY*2);//restores the source address to the initial value, which is expressed in the amount of bytes to restore*/
 	DMA0->TCD[0].DLAST_SGA = 0;/*restores the destination address to the initial value, which is expressed in the amount of bytes to restore*/
 	DMA0->TCD[0].CSR = DMA_CSR_INTMAJOR_MASK;/*The end-of-major loop interrupt is enabled*/
-
 
 }

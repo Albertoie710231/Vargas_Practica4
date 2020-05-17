@@ -41,6 +41,7 @@ void PDB_init_dac(void)
 	PDB0->SC |= PDB_SC_PDBEN_MASK;
 	PDB0->SC |= PDB_SC_LDOK(1);
 	PDB0->SC |= PDB_SC_SWTRIG(1);
+
 }
 
 void PDB_reset_counter(void)
