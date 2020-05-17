@@ -30,10 +30,10 @@ void DMA0_IRQHandler(void)
 	}
 	else
 	{
+		PDB_desable();
 		num_seg = 1;
 		DMA0->TCD[0].SADDR = (uint32_t)(ADC_biffer_address());
 		DMA0->CINT = 0;
-		PDB_desable();
 	}
 }
 

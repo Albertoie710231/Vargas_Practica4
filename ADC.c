@@ -18,6 +18,10 @@ void ADC0_IRQHandler(void)
 {
 	static uint16_t pos = 0;
 
+	/**
+	 * Ovtiene los datos del adc, contando el numero de muestras que forman 5 segundos,
+	 * en este caso so 40,000 muestras.
+	 */
 	if(SIZE_ARRAY > pos)
 	{
 		g_adc_result[pos] = (ADC0->R[SCn_A]);
@@ -25,9 +29,9 @@ void ADC0_IRQHandler(void)
 	}
 	else
 	{
+		PDB_desable();
 		RGB_green_on();
 		pos = 0;
-		PDB_desable();
 	}
 }
 

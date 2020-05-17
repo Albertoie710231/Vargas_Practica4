@@ -38,6 +38,9 @@ int main(void)
 
 	 static gpio_pin_control_register_t pin_control_register_uart = GPIO_MUX3;
 
+	 /**
+	  * Se cambia el el source clock por uno de 60MHz
+	  */
 #ifndef PLL_DIRECT_INIT
     mcg_clk_hz = fei_fbi(SLOW_IRC_FREQ,SLOW_IRC);// 64 Hz ---> 32768
     mcg_clk_hz = fbi_fbe(CLK_FREQ_HZ,LOW_POWER,EXTERNAL_CLOCK); // 97.656KHz ---> 50000000
