@@ -22,7 +22,7 @@ void DMA0_IRQHandler(void)
 	static uint8_t num_seg = 1;
 
 
-	if(SIZE_ARRAY >(num_seg*8000))
+	if(SIZE_ARRAY >(num_seg*FREQ_MUESTR))
 	{
 		DMA0->TCD[0].SADDR = (uint32_t)(ADC_biffer_address()+num_seg*FREQ_MUESTR);/*defines source data address*/
 		DMA0->CINT = 0;
