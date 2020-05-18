@@ -24,6 +24,10 @@ void DMA0_IRQHandler(void)
 
 	if(SIZE_ARRAY >(num_seg*FREQ_MUESTR))
 	{
+		/*
+		 * Cada vez que entra a este vector, mando 8000 valores por el DAC, pro lo que si queremos la transferencia completa
+		 * necesitamos entrar 5 veces a este vector de interrupcion, pero debemos cambiar direccion source con un offset de 8000
+		 */
 		DMA0->TCD[0].SADDR = (uint32_t)(ADC_biffer_address()+num_seg*FREQ_MUESTR);/*defines source data address*/
 		DMA0->CINT = 0;
 		num_seg++;

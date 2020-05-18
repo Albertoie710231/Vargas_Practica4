@@ -24,6 +24,7 @@ void PDB_init_adc(void)
 	 * 7)Configurar Frecuencia de operación del PDB a 8 KHz
 	 */
 
+	/** Deshabilita registros de PDB que controlan DMA **/
 	PDB0->SC &= ~PDB_SC_DMAEN_MASK;
 
 	PDB0->CH[0].C1 &= (~PDB_C1_BB_MASK);
